@@ -3,9 +3,33 @@ class Blockchain(object):
 		self.chain = []
 		self.current_transactions = []
 
-	def new_block(self):
+		# Create the gensis block
+		self.new_block(previous_hash=1, proof=100)
+
+	def new_block(self, proof, previous_hash=None):
 		# Creates a new Block and adds it to the chain
-		pass
+		"""
+		Creates a new block in the Blockchain
+
+		:param proof: 			<int> The proof given by the Proof of Work algorithm
+		:param previous_hash: 	(Optional) <str> Hash of previous block
+		:return: 				<dict> New Block 
+
+		"""
+
+		block = {
+			'index': len(self.chain) + 1,
+			'timestamp': time(),
+			'transactions': self.current_transactions,
+			'proof': proof,
+			'previous_hash': previous_hash
+		}
+
+		# Reset the current list of transactions
+		self.current_transactions = []
+
+		self.chain.append(block)
+		return block
 
 	def new_transaction(self, sender, recipient, amount):
 		# Adds a new transaction to the list of transaction
