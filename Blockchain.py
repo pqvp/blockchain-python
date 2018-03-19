@@ -1,3 +1,7 @@
+import hashlib
+import json
+from time import time
+
 class Blockchain(object):
 	def __inti__(self):
 		self.chain = []
@@ -53,10 +57,47 @@ class Blockchain(object):
 	@staticmethod
 	def hash(block):
 		# Hashes a block
-		pass
+		"""
+		Creates a SHA-256 hash of a Block
+
+		:param block: 	<dict> Block
+		:return: 		<str>
+		"""
+		block_string = json.dumps(block, sort_keys=True).encode()
+		return hashlib.sha256(block_string).hexdigest()
 
 	@property
 	def last_block(self):
 	    # Returns the last Block in the chain
-	    pass
+	    return self.chain[-1]
 	
+	def proof_of_work(self, last_proof):
+		"""
+		Simple Proof of Work algorithm:
+		- Find a number 'p' such that hash(pp') contains 4 leading zeroes, where p is the previous proof, 
+		- p' is the new proof
+
+		:param last_proof: 	<int>
+		:return:			<int>
+		"""
+
+		proof = 0
+		while self.valid_proof(last_proof, proof) is False:
+			proof += 1
+
+		return proof
+
+	@staticmethod
+	def valid_proof(last_proof, proof):
+		"""
+		Validates the proof:
+		Does hash(proof, last_proof) contains 4 leading zeroes?
+
+		:param last_proof:	<int> Previous proof
+		:param proof:		<int> Current Proof
+		:return:			<bool> True if correct, False if not
+		"""
+
+		guess = f'{last_proof}{proof}'.encode()
+		guess_hash = hashlib.sha256(guess).hexdigest()
+		return guess_hash[:4] == "0000"
